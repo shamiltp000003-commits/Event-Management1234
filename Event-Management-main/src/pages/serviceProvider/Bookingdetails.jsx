@@ -18,7 +18,7 @@ const Bookingdetails = () => {
         return;
       }
 
-      const response = await axios.get("http://localhost:5000/api/provider-bookings", {
+      const response = await axios.get("https://event-management-szqn.onrender.com/api/provider-bookings", {
         headers: {
           Authorization: `Bearer ${token}`
         }

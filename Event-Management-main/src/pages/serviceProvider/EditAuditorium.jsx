@@ -23,7 +23,7 @@ const EditAuditorium = () => {
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
 
-    const API_BASE_URL = "http://localhost:5000";
+    const API_BASE_URL = "https://event-management-szqn.onrender.com";
 
     useEffect(() => {
         const fetchService = async () => {

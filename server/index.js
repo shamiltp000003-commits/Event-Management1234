@@ -32,7 +32,7 @@ mongoose
 /* ---------- Middleware ---------- */
 app.use(
   cors({
-    origin: "*",
+    origin: "https://event-management1234.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

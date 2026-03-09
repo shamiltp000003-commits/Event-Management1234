@@ -34,7 +34,7 @@ const ProviderDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("token") || sessionStorage.getItem("token");
-      const response = await axios.get("http://localhost:5000/api/dashboard-stats", {
+      const response = await axios.get("https://event-management-szqn.onrender.com/api/dashboard-stats", {
         headers: { Authorization: `Bearer ${token}` }
       });
 

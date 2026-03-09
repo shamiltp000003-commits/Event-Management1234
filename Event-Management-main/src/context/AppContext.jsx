@@ -29,7 +29,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // 🌐 Global Axios Defaults
-axios.defaults.baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "https://event-management-szqn.onrender.com/api";
 
 export const AppContext = createContext();
 

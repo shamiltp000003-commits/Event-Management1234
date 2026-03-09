@@ -19,7 +19,7 @@ const MyServices = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const backendUrl = "http://localhost:5000";
+  const backendUrl = "https://event-management-szqn.onrender.com";
 
   const getServiceIcon = (serviceType) => {
     switch (serviceType) {
