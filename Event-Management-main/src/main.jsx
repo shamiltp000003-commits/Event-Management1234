@@ -8,7 +8,7 @@ import App from "./App.jsx";
 import { AppContextProvider } from "./context/AppContext.jsx";
 import { registerSW } from "virtual:pwa-register";
 
-registerSW();
+registerSW({ immediate: true })
 // ✅ AXIOS GLOBAL DEFAULTS (NO TOKEN)
   axios.defaults.baseURL = "http://localhost:5000/api";
 
