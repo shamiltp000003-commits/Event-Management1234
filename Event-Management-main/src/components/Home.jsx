@@ -25,7 +25,7 @@ const Home = () => {
     <>
       {/* ------------ HERO SECTION ------------ */}
       <section
-        className="relative w-full min-h-[100dvh] flex items-center justify-center md:justify-start bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
+        className="relative w-full min-h-[65vh] sm:min-h-[75vh] md:min-h-[100dvh] flex items-center justify-center md:justify-start bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
         style={{
           backgroundImage: `url(${backgrounds[currentIndex]})`,
         }}
