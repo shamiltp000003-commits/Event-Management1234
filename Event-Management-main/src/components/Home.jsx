@@ -35,9 +35,9 @@ const Home = () => {
 
         {/* ------------ MAIN CONTAINER ------------ */}
         <div className="relative z-20 w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 pt-20 pb-16 flex flex-col items-center md:items-start text-center md:text-left">
-          
+
           <div className="w-full max-w-3xl flex flex-col items-center md:items-start space-y-6 sm:space-y-8">
-            
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-white font-extrabold leading-[1.1] tracking-tight drop-shadow-2xl">
               Making Your Events <br className="hidden sm:block" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 drop-shadow-lg">
@@ -52,11 +52,28 @@ const Home = () => {
 
             {/* CTA & Rotating Text Container */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 sm:gap-6 pt-4 sm:pt-6">
-              
+
               <div className="flex-1 sm:flex-none flex justify-center md:justify-start">
-                <RotatingText
+                {/* <RotatingText
                   texts={["Wedding", "Auditorium", "Catering", "Photography"]}
                   mainClassName="w-full sm:w-auto px-6 py-3.5 sm:px-8 sm:py-4 bg-blue-600/90 hover:bg-blue-500 backdrop-blur-md text-white font-semibold text-lg sm:text-xl md:text-2xl rounded-2xl sm:rounded-full shadow-xl shadow-blue-500/20 border border-blue-400/30 min-w-[200px] sm:min-w-[220px] text-center transition-all duration-300"
+                  staggerFrom={"last"}
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-120%" }}
+                  staggerDuration={0.025}
+                  splitLevelClassName="overflow-hidden pb-1"
+                  transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                  rotationInterval={2500}
+                /> */}
+                <RotatingText
+                  texts={["Wedding", "Auditorium", "Catering", "Photography"]}
+                  mainClassName="w-auto mx-auto px-6 py-3.5 sm:px-8 sm:py-4 
+  bg-blue-600/90 hover:bg-blue-500 backdrop-blur-md text-white 
+  font-semibold text-lg sm:text-xl md:text-2xl 
+  rounded-2xl sm:rounded-full shadow-xl shadow-blue-500/20 
+  border border-blue-400/30 min-w-[160px] sm:min-w-[200px] 
+  text-center transition-all duration-300"
                   staggerFrom={"last"}
                   initial={{ y: "100%" }}
                   animate={{ y: 0 }}
@@ -80,9 +97,9 @@ const Home = () => {
                 <span>Book Now</span>
                 <IoMdArrowRoundForward className="group-hover:translate-x-1.5 transition-transform duration-300" />
               </a>
-              
+
             </div>
-            
+
           </div>
         </div>
       </section>
