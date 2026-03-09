@@ -220,9 +220,9 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white z-[210] shadow-2xl flex flex-col p-6"
+              className="fixed top-0 right-0 h-[100dvh] w-[80%] max-w-sm bg-white z-[210] shadow-2xl flex flex-col p-6 overflow-y-auto"
             >
-              <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center justify-between mb-8 shrink-0">
                 <span className="text-xl font-bold bg-gradient-to-r from-indigo-700 to-cyan-600 bg-clip-text text-transparent font-playfair">
                   WedCraft
                 </span>
@@ -262,7 +262,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              <div className="mt-auto pt-6 border-t border-gray-100">
+              <div className="mt-8 pt-6 border-t border-gray-100 shrink-0">
                 {!user ? (
                   <button
                     onClick={() => { setMobileMenuOpen(false); setShowUserLogin(true); }}
@@ -273,12 +273,12 @@ const Navbar = () => {
                 ) : (
                   <div className="space-y-3">
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                      <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg font-bold">
+                      <div className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
                         {user.name.charAt(0).toUpperCase()}
                       </div>
-                      <div>
-                        <p className="font-bold text-gray-800 text-sm">{user.name}</p>
-                        <p className="text-[10px] text-gray-500">{user.email}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-gray-800 text-sm truncate">{user.name}</p>
+                        <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
                       </div>
                     </div>
                     <button
