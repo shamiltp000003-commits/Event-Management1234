@@ -45,8 +45,15 @@ const SettlementHistory = () => {
 
   // Calculate metrics
   const totalRevenue = bookings
-    .filter((b) => b.status === "confirmed" || b.status === "completed")
-    .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+    .reduce((sum, b) => {
+      if (b.status === "confirmed" || b.status === "completed") {
+        return sum + (b.totalPrice || 0);
+      }
+      if (b.status === "cancelled") {
+        return sum + (b.cancellationFee || 0);
+      }
+      return sum;
+    }, 0);
 
   const pendingRevenue = bookings
     .filter((b) => b.status === "pending")
@@ -246,10 +253,19 @@ const SettlementHistory = () => {
                     </div>
                   </td>
 
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-1 text-gray-800 font-bold">
-                      <IndianRupee className="w-4 h-4 text-gray-500" />
-                      {b.totalPrice ? b.totalPrice.toLocaleString('en-IN') : '0'}
+                   <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-1 text-gray-800 font-bold">
+                        <IndianRupee className="w-4 h-4 text-gray-500" />
+                        {b.status === "cancelled" 
+                          ? (b.cancellationFee || 0).toLocaleString('en-IN') 
+                          : (b.totalPrice || 0).toLocaleString('en-IN')}
+                      </div>
+                      {b.status === "cancelled" && (
+                        <div className="text-[10px] text-red-500 font-medium">
+                          Refund: ₹{(b.refundAmount || 0).toLocaleString('en-IN')}
+                        </div>
+                      )}
                     </div>
                   </td>
 

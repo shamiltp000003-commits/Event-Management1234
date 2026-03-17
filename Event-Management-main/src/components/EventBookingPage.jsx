@@ -21,7 +21,11 @@ import {
   IoAdd,
   IoRemove,
   IoTime,
+  IoBriefcaseOutline,
+  IoShieldCheckmarkOutline,
+  IoLockClosedOutline
 } from "react-icons/io5";
+import { IndianRupee } from "lucide-react";
 
 const EventBookingPage = () => {
   const { category, serviceId } = useParams();
@@ -32,8 +36,8 @@ const EventBookingPage = () => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [auditoriumPricing, setAuditoriumPricing] = useState(""); // 'daily' or 'hourly'
   const [bookingData, setBookingData] = useState({
-    name: "",
-    email: "",
+    name: user?.name || "",
+    email: user?.email || "",
     phone: "",
     eventDate: "",
     eventTime: "",
@@ -41,6 +45,18 @@ const EventBookingPage = () => {
     hours: 4,
     specialRequests: "",
   });
+
+  // Pre-fill user data when it becomes available
+  useEffect(() => {
+    if (user) {
+      setBookingData(prev => ({
+        ...prev,
+        name: prev.name || user.name || "",
+        email: prev.email || user.email || "",
+      }));
+    }
+  }, [user]);
+
   const [totalPrice, setTotalPrice] = useState(0);
   const [isDateAvailable, setIsDateAvailable] = useState(true);
   const [availabilityMessage, setAvailabilityMessage] = useState("");
@@ -242,15 +258,15 @@ const EventBookingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-20 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-16 sm:pt-20 p-4 sm:p-6">
       {/* Header */}
-      <div className="bg-white shadow-sm w-fit rounded-full">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="backdrop-blur-md bg-white/70 shadow-lg border border-white/20 w-fit rounded-2xl sticky top-20 sm:top-24 z-20 mx-auto lg:mx-0">
+        <div className="px-4 sm:px-6 py-2 sm:py-3">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="flex items-center gap-2 text-gray-700 hover:text-blue-600 font-semibold transition-all duration-300 text-sm sm:text-base"
           >
-            <IoChevronBack className="w-5 h-5" />
+            <IoChevronBack className="w-4 h-4 sm:w-5 h-5" />
             Back to Service
           </button>
         </div>
@@ -261,30 +277,36 @@ const EventBookingPage = () => {
           {/* Left Column - Service Info & Packages */}
           <div className="lg:col-span-2 space-y-6">
             {/* Service Header */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div
-                  className={`p-3 bg-gradient-to-r ${categoryInfo.color} text-white rounded-xl`}
-                >
-                  <CategoryIcon className="w-8 h-8" />
-                </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-800">
-                    Book{" "}
-                    {service.auditoriumName ||
-                      service.companyName ||
-                      service.studioName}
-                  </h1>
-                  <p className="text-gray-600 flex items-center gap-2">
-                    <IoLocationOutline className="w-4 h-4" />
-                    {service.location}
-                  </p>
-                </div>
+            <div className="backdrop-blur-xl bg-white/80 rounded-2xl sm:rounded-3xl shadow-xl border border-white/40 p-5 sm:p-8 hover:shadow-2xl transition-all duration-500 overflow-hidden relative group">
+              <div className="absolute top-0 right-0 p-8 transform translate-x-4 -translate-y-4 opacity-5 group-hover:rotate-12 transition-transform duration-700 hidden sm:block">
+                <CategoryIcon className="w-32 h-32" />
               </div>
+              <div className="relative z-10">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5 mb-6">
+                  <div
+                    className={`p-3 sm:p-4 bg-gradient-to-br ${categoryInfo.color} text-white rounded-xl sm:rounded-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <CategoryIcon className="w-8 h-8 sm:w-10 h-10" />
+                  </div>
+                  <div>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                      {service.auditoriumName ||
+                        service.companyName ||
+                        service.studioName}
+                    </h1>
+                    <p className="text-gray-500 flex items-center justify-center sm:justify-start gap-2 mt-1 font-medium italic text-sm sm:text-base">
+                      <IoLocationOutline className="w-4 h-4 text-blue-500" />
+                      {service.location}
+                    </p>
+                  </div>
+                </div>
 
-              {service.description && (
-                <p className="text-gray-600">{service.description}</p>
-              )}
+                {service.description && (
+                  <p className="text-gray-600 leading-relaxed text-base sm:text-lg italic border-l-4 border-blue-500/30 pl-4 py-1">
+                    "{service.description}"
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Auditorium Pricing Type Selection */}
@@ -294,18 +316,18 @@ const EventBookingPage = () => {
                   Select Pricing Type
                 </h2>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <button
                     onClick={() => setAuditoriumPricing("daily")}
                     className={`p-4 border-2 rounded-xl transition-all duration-200 ${auditoriumPricing === "daily"
-                      ? "border-green-500 bg-green-50 text-green-700"
-                      : "border-gray-200 hover:border-gray-300 text-gray-700"
+                      ? "border-green-500 bg-green-50 text-green-700 shadow-md scale-[1.02]"
+                      : "border-gray-100 hover:border-gray-200 text-gray-600"
                       }`}
                   >
                     <div className="text-center">
                       <h3 className="font-bold text-lg">Daily</h3>
-                      <p className="text-sm opacity-75">Full day booking</p>
-                      <p className="text-2xl font-bold mt-2">
+                      <p className="text-xs opacity-75">Full day booking</p>
+                      <p className="text-xl sm:text-2xl font-black mt-2">
                         ₹{service.price?.toLocaleString()}
                       </p>
                     </div>
@@ -314,17 +336,17 @@ const EventBookingPage = () => {
                   <button
                     onClick={() => setAuditoriumPricing("hourly")}
                     className={`p-4 border-2 rounded-xl transition-all duration-200 ${auditoriumPricing === "hourly"
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:border-gray-300 text-gray-700"
+                      ? "border-blue-500 bg-blue-50 text-blue-700 shadow-md scale-[1.02]"
+                      : "border-gray-100 hover:border-gray-200 text-gray-600"
                       }`}
                   >
                     <div className="text-center">
                       <h3 className="font-bold text-lg">Hourly</h3>
-                      <p className="text-sm opacity-75">Flexible hours</p>
-                      <p className="text-2xl font-bold mt-2">
+                      <p className="text-xs opacity-75">Flexible hours</p>
+                      <p className="text-xl sm:text-2xl font-black mt-2">
                         ₹{service.pricePerHour}
                       </p>
-                      <p className="text-xs opacity-75">per hour</p>
+                      <p className="text-[10px] font-bold uppercase opacity-75">per hour</p>
                     </div>
                   </button>
                 </div>
@@ -361,89 +383,108 @@ const EventBookingPage = () => {
               category === "photography" ||
               category === "stage-decoration") &&
               (service.packages || service.decorations) && (
-                <div className="bg-white rounded-2xl shadow-lg p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">
-                    Select Package
-                  </h2>
-                  <div className="space-y-3">
+                <div className="backdrop-blur-xl bg-white/80 rounded-2xl sm:rounded-3xl shadow-xl border border-white/40 p-5 sm:p-8">
+                  <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                    <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                      <IoBriefcaseOutline className="w-5 h-5" />
+                    </div>
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+                      Explore Tiers
+                    </h2>
+                  </div>
+                  <div className="grid gap-4">
                     {(service.packages || service.decorations).map((pkg) => (
                       <div
                         key={pkg._id}
                         onClick={() => handlePackageSelect(pkg)}
-                        className={`border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${selectedPackage?._id === pkg._id
-                          ? `border-blue-500 bg-blue-50`
-                          : "border-gray-200 hover:border-gray-300"
+                        className={`group cursor-pointer transition-all duration-500 relative ${selectedPackage?._id === pkg._id
+                          ? "scale-[1.02]"
+                          : "hover:scale-[1.01]"
                           }`}
                       >
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-bold text-lg text-gray-800">
-                              {pkg.packageName || pkg.name || pkg.title}
-                            </h3>
-                            <p className="text-gray-600 text-sm mt-1">
-                              {pkg.description}
-                            </p>
+                        <div className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border-2 transition-all duration-300 ${selectedPackage?._id === pkg._id
+                          ? "bg-gradient-to-br from-blue-50 to-white border-blue-500 shadow-blue-100 shadow-lg"
+                          : "bg-white/50 border-gray-100 hover:border-blue-200 hover:shadow-xl"
+                          }`}>
+                          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div className="flex-1 w-full">
+                              <div className="flex items-center justify-between sm:justify-start gap-3 mb-2">
+                                <h3 className="font-black text-lg sm:text-xl text-gray-900">
+                                  {pkg.packageName || pkg.name || pkg.title}
+                                </h3>
+                                {selectedPackage?._id === pkg._id && (
+                                  <span className="flex items-center gap-1 text-[8px] sm:text-[10px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse text-center">
+                                    Selected
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-gray-500 text-xs sm:text-sm leading-relaxed max-w-xl">
+                                {pkg.description}
+                              </p>
 
-                            {/* Package tags */}
-                            <div className="flex flex-wrap gap-2 mt-3">
+                              {/* Package tags */}
+                              <div className="flex flex-wrap gap-2 mt-3 sm:mt-4">
+                                {category === "catering" && (
+                                  <span
+                                    className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-bold uppercase tracking-wider ${pkg.foodType === "veg"
+                                      ? "bg-green-100/50 text-green-700 border border-green-200"
+                                      : pkg.foodType === "non-veg"
+                                        ? "bg-red-100/50 text-red-700 border border-red-200"
+                                        : "bg-blue-100/50 text-blue-700 border border-blue-200"
+                                      }`}
+                                  >
+                                    {pkg.foodType === "both"
+                                      ? "Hybrid (Veg + Non)"
+                                      : pkg.foodType || "Standard"}
+                                  </span>
+                                )}
+                                {category === "stage-decoration" && (
+                                  <span
+                                    className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-bold uppercase tracking-wider ${pkg.category === "Luxury"
+                                      ? "bg-amber-100/50 text-amber-700 border border-amber-200"
+                                      : pkg.category === "Premium"
+                                        ? "bg-indigo-100/50 text-indigo-700 border border-indigo-200"
+                                        : "bg-gray-100/50 text-gray-700 border border-gray-200"
+                                      }`}
+                                  >
+                                    {pkg.category} Experience
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            <div className="text-left sm:text-right w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-gray-100">
                               {category === "catering" && (
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-semibold ${pkg.foodType === "veg"
-                                    ? "bg-green-100 text-green-700"
-                                    : pkg.foodType === "non-veg"
-                                      ? "bg-red-100 text-red-700"
-                                      : "bg-blue-100 text-blue-700"
-                                    }`}
-                                >
-                                  {pkg.foodType === "both"
-                                    ? "Veg & Non-Veg"
-                                    : pkg.foodType?.toUpperCase()}
-                                </span>
+                                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-3 bg-gray-50/50 rounded-xl group-hover:bg-blue-50/50 transition-colors">
+                                  <p className="text-xl sm:text-2xl font-black text-blue-600 tracking-tighter">
+                                    ₹{pkg.pricePerPerson}
+                                  </p>
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                    / Plate
+                                  </p>
+                                </div>
+                              )}
+                              {category === "photography" && (
+                                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-3 bg-gray-50/50 rounded-xl group-hover:bg-purple-50/50 transition-colors text-center sm:min-w-[100px]">
+                                  <p className="text-xl sm:text-2xl font-black text-purple-600 tracking-tighter">
+                                    ₹{pkg.pricePerHour}
+                                  </p>
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                    / Hour
+                                  </p>
+                                </div>
                               )}
                               {category === "stage-decoration" && (
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-semibold ${pkg.category === "Luxury"
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : pkg.category === "Premium"
-                                      ? "bg-blue-100 text-blue-700"
-                                      : "bg-gray-100 text-gray-700"
-                                    }`}
-                                >
-                                  {pkg.category}
-                                </span>
+                                <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center p-3 sm:p-3 bg-gray-50/50 rounded-xl group-hover:bg-pink-50/50 transition-colors">
+                                  <p className="text-xl sm:text-2xl font-black text-pink-600 tracking-tighter">
+                                    ₹{pkg.pricePerDay?.toLocaleString()}
+                                  </p>
+                                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                    / Event
+                                  </p>
+                                </div>
                               )}
                             </div>
-                          </div>
-
-                          <div className="text-right ml-4">
-                            {category === "catering" && (
-                              <div>
-                                <p className="text-2xl font-bold text-green-600">
-                                  ₹{pkg.pricePerPerson}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  per person
-                                </p>
-                              </div>
-                            )}
-                            {category === "photography" && (
-                              <div>
-                                <p className="text-2xl font-bold text-purple-600">
-                                  ₹{pkg.pricePerHour}
-                                </p>
-                                <p className="text-sm text-gray-500">
-                                  per hour
-                                </p>
-                              </div>
-                            )}
-                            {category === "stage-decoration" && (
-                              <div>
-                                <p className="text-2xl font-bold text-pink-600">
-                                  ₹{pkg.pricePerDay?.toLocaleString()}
-                                </p>
-                                <p className="text-sm text-gray-500">per day</p>
-                              </div>
-                            )}
                           </div>
                         </div>
                       </div>
@@ -528,15 +569,20 @@ const EventBookingPage = () => {
           {/* Right Column - Booking Form & Summary */}
           <div className="space-y-6">
             {/* Price Summary */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">
-                Booking Summary
-              </h2>
+            <div className="backdrop-blur-xl bg-white/90 rounded-2xl sm:rounded-3xl shadow-xl border border-white/40 p-5 sm:p-8 lg:sticky top-24 hover:shadow-2xl transition-all duration-500">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+                  <IoCheckmarkCircleOutline className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">
+                  Fare Breakdown
+                </h2>
+              </div>
 
-              <div className="space-y-3 mb-6">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Service:</span>
-                  <span className="font-semibold">
+              <div className="space-y-4 mb-8">
+                <div className="flex justify-between items-center group">
+                  <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Service Identity</span>
+                  <span className="font-bold text-gray-900">
                     {service.auditoriumName ||
                       service.companyName ||
                       service.studioName}
@@ -544,9 +590,9 @@ const EventBookingPage = () => {
                 </div>
 
                 {selectedPackage && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Package:</span>
-                    <span className="font-semibold">
+                  <div className="flex justify-between items-center group">
+                    <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Selected Tier</span>
+                    <span className="font-bold text-blue-600 underline decoration-blue-200 underline-offset-4">
                       {selectedPackage.packageName ||
                         selectedPackage.name ||
                         selectedPackage.title}
@@ -555,137 +601,186 @@ const EventBookingPage = () => {
                 )}
 
                 {category === "catering" && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Guests:</span>
-                    <span className="font-semibold">{bookingData.guests}</span>
+                  <div className="flex justify-between items-center group">
+                    <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Headcount</span>
+                    <span className="font-extrabold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg">
+                      {bookingData.guests} <span className="text-[10px] text-gray-400 font-normal">PERSONS</span>
+                    </span>
                   </div>
                 )}
 
                 {category === "photography" && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Duration:</span>
-                    <span className="font-semibold">
-                      {bookingData.hours} hours
+                  <div className="flex justify-between items-center group">
+                    <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Session Duration</span>
+                    <span className="font-extrabold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg">
+                      {bookingData.hours} <span className="text-[10px] text-gray-400 font-normal">HOURS</span>
                     </span>
                   </div>
                 )}
 
                 {category === "auditorium" && (
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Pricing Type:</span>
-                    <span className="font-semibold capitalize">
-                      {auditoriumPricing}
+                  <div className="flex justify-between items-center group">
+                    <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Billing Model</span>
+                    <span className="font-extrabold text-gray-900 px-3 py-1 bg-amber-50 text-amber-700 rounded-lg capitalize">
+                      {auditoriumPricing} Basis
                     </span>
                   </div>
                 )}
 
                 {category === "auditorium" &&
                   auditoriumPricing === "hourly" && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Duration:</span>
-                      <span className="font-semibold">
-                        {bookingData.hours} hours
+                    <div className="flex justify-between items-center group">
+                      <span className="text-gray-500 font-medium group-hover:text-gray-700 transition-colors">Reserved Time</span>
+                      <span className="font-extrabold text-gray-900 bg-gray-50 px-3 py-1 rounded-lg">
+                        {bookingData.hours} <span className="text-[10px] text-gray-400 font-normal">HOURS</span>
                       </span>
                     </div>
                   )}
 
-                <hr className="my-3" />
+                <div className="relative pt-4">
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+                  <div className="flex justify-between items-end mt-4">
+                    <div>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Payable</p>
+                      <span className="text-3xl font-black text-emerald-600 tracking-tighter">
+                        ₹{totalPrice.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="mb-1">
+                      <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-md">INC. TAXES</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-                <div className="flex justify-between text-xl font-bold">
-                  <span>Total Amount:</span>
-                  <span className="text-green-600">
-                    ₹{totalPrice.toLocaleString()}
-                  </span>
+              <div className="bg-blue-50/50 rounded-2xl p-4 border border-blue-100/50">
+                <div className="flex gap-2 text-blue-700">
+                  <IoCheckmarkCircleOutline className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs font-medium leading-relaxed">
+                    By proceeding, you agree to our <span className="font-bold underline cursor-pointer">Cancellation & Refund Policy</span> based on the proximity to the event date.
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* Booking Form */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">
-                Your Details
-              </h2>
+            <div className="backdrop-blur-xl bg-white/80 rounded-2xl sm:rounded-3xl shadow-xl border border-white/40 p-5 sm:p-8">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                  <IoPersonOutline className="w-5 h-5" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">
+                  Personal Details
+                </h2>
+              </div>
 
-              <form onSubmit={handleBookingSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={bookingData.name}
-                    onChange={(e) =>
-                      setBookingData({ ...bookingData, name: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your full name"
-                  />
+              <form onSubmit={handleBookingSubmit} className="space-y-6">
+                <div className="grid gap-6">
+                  <div className="relative group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                      Full Identity
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <IoPersonOutline className="w-5 h-5" />
+                      </div>
+                      <input
+                        type="text"
+                        required
+                        value={bookingData.name}
+                        onChange={(e) =>
+                          setBookingData({ ...bookingData, name: e.target.value })
+                        }
+                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border-2 border-gray-100 rounded-2xl text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                      Electronic Mail
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <IoMailOutline className="w-5 h-5" />
+                      </div>
+                      <input
+                        type="email"
+                        required
+                        value={bookingData.email}
+                        readOnly={!!user?.email}
+                        onChange={(e) =>
+                          setBookingData({ ...bookingData, email: e.target.value })
+                        }
+                        className={`w-full pl-12 pr-4 py-4 ${user?.email ? 'bg-gray-100 cursor-not-allowed' : 'bg-gray-50/50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100'} border-2 border-gray-100 rounded-2xl text-sm font-semibold transition-all outline-none`}
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="relative group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                      Contact Number
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                        <IoCallOutline className="w-5 h-5" />
+                      </div>
+                      <input
+                        type="tel"
+                        required
+                        value={bookingData.phone}
+                        onChange={(e) =>
+                          setBookingData({ ...bookingData, phone: e.target.value })
+                        }
+                        className="w-full pl-12 pr-4 py-4 bg-gray-50/50 border-2 border-gray-100 rounded-2xl text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none"
+                        placeholder="+91 98765 43210"
+                      />
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={bookingData.email}
-                    onChange={(e) =>
-                      setBookingData({ ...bookingData, email: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your email"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    required
-                    value={bookingData.phone}
-                    onChange={(e) =>
-                      setBookingData({ ...bookingData, phone: e.target.value })
-                    }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Enter your phone number"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+                  <div className="relative group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                       Event Date
                     </label>
-                    <input
-                      type="date"
-                      required
-                      value={bookingData.eventDate}
-                      onChange={(e) =>
-                        setBookingData({
-                          ...bookingData,
-                          eventDate: e.target.value,
-                        })
-                      }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
+                    <div className="relative">
+                      <input
+                        type="date"
+                        required
+                        value={bookingData.eventDate}
+                        onChange={(e) =>
+                          setBookingData({
+                            ...bookingData,
+                            eventDate: e.target.value,
+                          })
+                        }
+                        className="w-full px-4 py-4 bg-gray-50/50 border-2 border-gray-100 rounded-2xl text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none"
+                      />
+                    </div>
                     {bookingData.eventDate && (
-                      <div className="mt-1">
+                      <div className="mt-2 text-center">
                         {checkingAvailability ? (
-                          <p className="text-xs text-blue-500 animate-pulse">Checking availability...</p>
+                          <span className="text-[10px] font-bold text-blue-500 animate-pulse flex items-center justify-center gap-1 uppercase tracking-tighter">
+                            Checking Slots...
+                          </span>
                         ) : !isDateAvailable ? (
-                          <p className="text-xs text-red-500 font-semibold">{availabilityMessage}</p>
+                          <span className="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100 flex items-center justify-center gap-1 uppercase tracking-tighter">
+                            Already Reserved
+                          </span>
                         ) : (
-                          <p className="text-xs text-green-500 font-semibold">{availabilityMessage}</p>
+                          <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100 flex items-center justify-center gap-1 uppercase tracking-tighter">
+                            Date Available
+                          </span>
                         )}
                       </div>
                     )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+
+                  <div className="relative group">
+                    <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
                       Event Time
                     </label>
                     <input
@@ -697,14 +792,14 @@ const EventBookingPage = () => {
                           eventTime: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-4 bg-gray-50/50 border-2 border-gray-100 rounded-2xl text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Special Requests
+                <div className="relative group">
+                  <label className="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2 ml-1">
+                    Special Inquiries
                   </label>
                   <textarea
                     value={bookingData.specialRequests}
@@ -715,34 +810,40 @@ const EventBookingPage = () => {
                       })
                     }
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Any special requirements or requests..."
+                    className="w-full px-4 py-4 bg-gray-50/50 border-2 border-gray-100 rounded-2xl text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all outline-none resize-none"
+                    placeholder="Describe your vision or mention any dietary restrictions..."
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={
-                    (category === "auditorium" ? false : !selectedPackage) || !isDateAvailable || checkingAvailability || isAdmin || user?.role === "provider"
-                  }
-                  className={`w-full py-4 px-6 bg-gradient-to-r ${isAdmin || user?.role === "provider" ? "from-gray-400 to-gray-500" : categoryInfo.color} text-white rounded-xl font-bold text-lg hover:shadow-xl transition-all duration-300 transform ${!(isAdmin || user?.role === "provider") && "hover:scale-[1.02]"} flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-                >
-                  {checkingAvailability ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                      Checking...
-                    </>
-                  ) : !isDateAvailable ? (
-                    "Date Unavailable"
-                  ) : isAdmin || user?.role === "provider" ? (
-                    "Booking Restricted"
-                  ) : (
-                    <>
-                      <IoCheckmarkCircleOutline className="w-6 h-6" />
-                      Confirm Booking - ₹{totalPrice.toLocaleString()}
-                    </>
-                  )}
-                </button>
+                <div className="pt-4">
+                  <button
+                    type="submit"
+                    disabled={
+                      (category === "auditorium" ? false : !selectedPackage) || !isDateAvailable || checkingAvailability || isAdmin || user?.role === "provider"
+                    }
+                    className={`w-full py-4 sm:py-5 px-6 sm:px-8 bg-gradient-to-r ${isAdmin || user?.role === "provider" ? "from-gray-400 to-gray-500" : categoryInfo.color} text-white rounded-xl sm:rounded-2xl font-black text-base sm:text-lg shadow-xl shadow-blue-200 hover:shadow-2xl transition-all duration-300 transform ${!(isAdmin || user?.role === "provider") && "hover:scale-[1.02] active:scale-95"} flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+                  >
+                    {checkingAvailability ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-white/20 border-t-white"></div>
+                        Validating...
+                      </>
+                    ) : !isDateAvailable ? (
+                      "Slot Occupied"
+                    ) : isAdmin || user?.role === "provider" ? (
+                      "Restricted Access"
+                    ) : (
+                      <>
+                        <IoShieldCheckmarkOutline className="w-5 h-5 sm:w-6 sm:h-6" />
+                        Confirm Booking
+                      </>
+                    )}
+                  </button>
+                  <p className="text-[8px] sm:text-[10px] text-center text-gray-400 mt-4 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                    <IoLockClosedOutline className="w-3 h-3 text-emerald-500" />
+                    Secure SSL Encrypted
+                  </p>
+                </div>
               </form>
             </div>
           </div>

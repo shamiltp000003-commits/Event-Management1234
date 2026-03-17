@@ -84,6 +84,10 @@ const bookingSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "cancelled", "completed"],
       default: "pending",
     },
+
+    refundAmount: { type: Number, default: 0 },
+    cancellationFee: { type: Number, default: 0 },
+    cancellationReason: { type: String },
   },
   { timestamps: true }
 );

@@ -20,10 +20,14 @@ export const getDashboardStats = async (req, res) => {
             ]).then(counts => counts.reduce((a, b) => a + b, 0))
         ]);
 
-        // 2. Calculate Total Revenue (Exclude cancelled)
+        // 2. Calculate Total Revenue (Include confirmed/completed totalPrice + cancelled cancellationFee)
         const totalRevenue = confirmedBookings
-            .filter(b => b.status !== "cancelled")
-            .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+            .reduce((sum, b) => {
+                if (b.status === "cancelled") {
+                    return sum + (b.cancellationFee || 0);
+                }
+                return sum + (b.totalPrice || 0);
+            }, 0);
 
         // 3. Get Latest 5 Bookings
         const latestBookings = await Booking.find({ provider: providerId })
@@ -41,8 +45,13 @@ export const getDashboardStats = async (req, res) => {
             const endOfMonth = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
 
             const monthRevenue = confirmedBookings
-                .filter(b => b.status !== "cancelled" && b.createdAt >= startOfMonth && b.createdAt <= endOfMonth)
-                .reduce((sum, b) => sum + (b.totalPrice || 0), 0);
+                .filter(b => b.createdAt >= startOfMonth && b.createdAt <= endOfMonth)
+                .reduce((sum, b) => {
+                    if (b.status === "cancelled") {
+                        return sum + (b.cancellationFee || 0);
+                    }
+                    return sum + (b.totalPrice || 0);
+                }, 0);
 
             chartData.push({ month: monthName, revenue: monthRevenue });
         }

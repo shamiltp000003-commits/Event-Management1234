@@ -170,8 +170,11 @@ const ProviderDashboard = () => {
                     <div key={booking._id} className='p-4 hover:bg-gray-50 transition-colors'>
                       <div className='flex items-center justify-between mb-2'>
                         <span className='text-xs font-mono text-gray-400'>#{booking._id.slice(-6).toUpperCase()}</span>
-                        <span className='text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full text-center'>
-                          ₹{booking.totalPrice?.toLocaleString()}
+                        <span className={`text-xs font-bold px-2 py-1 rounded-full text-center ${booking.status === 'cancelled'
+                            ? 'text-orange-600 bg-orange-50'
+                            : 'text-green-600 bg-green-50'
+                          }`}>
+                          ₹{(booking.status === 'cancelled' ? (booking.cancellationFee || 0) : (booking.totalPrice || 0)).toLocaleString()}
                         </span>
                       </div>
                       <div className='flex items-center gap-3'>

@@ -151,7 +151,31 @@ const UserBookings = () => {
     setShowCancelModal(true);
   };
 
-  const handleConfirmCancellation = () => {
+  const calculateRefund = (eventDate, totalPrice) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const event = new Date(eventDate);
+    event.setHours(0, 0, 0, 0);
+
+    const diffTime = event.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    let refundPercent = 0;
+    if (diffDays >= 7) {
+      refundPercent = 100;
+    } else if (diffDays >= 3) {
+      refundPercent = 50;
+    } else {
+      refundPercent = 0;
+    }
+
+    const refundAmount = (totalPrice * refundPercent) / 100;
+    const cancellationFee = totalPrice - refundAmount;
+
+    return { refundPercent, refundAmount, cancellationFee };
+  };
+
+  const handleConfirmCancellation = async () => {
     if (!cancelReason) {
       alert('Please select a reason for cancellation.');
       return;
@@ -164,47 +188,49 @@ const UserBookings = () => {
       return;
     }
 
-    // Update booking status to cancelled via API
-    const confirmCancellation = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.put(`/cancel/${bookingToCancel._id}`,
-          { status: 'cancelled' },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+    const { refundAmount, cancellationFee } = calculateRefund(bookingToCancel.eventDate, bookingToCancel.totalPrice);
 
-        if (response.data.success || response.status === 200) {
-          const updatedBookings = bookings.map(booking => {
-            if (booking._id === bookingToCancel._id) {
-              return {
-                ...booking,
-                status: 'cancelled',
-                cancellationReason: finalReason,
-                cancelledAt: new Date().toISOString()
-              };
-            }
-            return booking;
-          });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`/cancel/${bookingToCancel._id}`,
+        {
+          status: 'cancelled',
+          refundAmount,
+          cancellationFee,
+          cancellationReason: finalReason
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-          setBookings(updatedBookings);
+      if (response.data.success || response.status === 200) {
+        const updatedBookings = bookings.map(booking => {
+          if (booking._id === bookingToCancel._id) {
+            return {
+              ...booking,
+              status: 'cancelled',
+              cancellationReason: finalReason,
+              refundAmount,
+              cancellationFee,
+              cancelledAt: new Date().toISOString()
+            };
+          }
+          return booking;
+        });
 
-          // Reset modal state
-          setShowCancelModal(false);
-          setBookingToCancel(null);
-          setCancelReason('');
-          setCustomReason('');
+        setBookings(updatedBookings);
+        setShowCancelModal(false);
+        setBookingToCancel(null);
+        setCancelReason('');
+        setCustomReason('');
 
-          alert('Booking has been cancelled successfully. You will receive a confirmation email shortly.');
-        } else {
-          alert('Failed to cancel booking. Please try again.');
-        }
-      } catch (err) {
-        console.error('Error cancelling booking:', err);
-        alert(err.response?.data?.message || 'Error occurred while cancelling. Please try again.');
+        alert(`Booking cancelled successfully.\nRefund Amount: ₹${refundAmount.toLocaleString()}\nCancellation Fee: ₹${cancellationFee.toLocaleString()}`);
+      } else {
+        alert('Failed to cancel booking. Please try again.');
       }
-    };
-
-    confirmCancellation();
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      alert(err.response?.data?.message || 'Error occurred while cancelling. Please try again.');
+    }
   };
 
 
@@ -612,6 +638,18 @@ const UserBookings = () => {
                     <div>
                       <span className="text-gray-600">Event Time:</span>
                       <p className="font-semibold">{formatTime(bookingToCancel.eventTime)}</p>
+                    </div>
+                  </div>
+
+                  {/* Estimated Refund Calculation */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-gray-600">Estimated Refund ({calculateRefund(bookingToCancel.eventDate, bookingToCancel.totalPrice).refundPercent}%):</span>
+                      <span className="font-bold text-green-600">₹{calculateRefund(bookingToCancel.eventDate, bookingToCancel.totalPrice).refundAmount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Cancellation Fee:</span>
+                      <span className="font-bold text-red-600">₹{calculateRefund(bookingToCancel.eventDate, bookingToCancel.totalPrice).cancellationFee.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>

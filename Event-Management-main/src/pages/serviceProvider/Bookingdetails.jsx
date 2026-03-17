@@ -43,8 +43,12 @@ const Bookingdetails = () => {
 
   const getTotalRevenue = () => {
     return bookings
-      .filter(booking => booking.status !== "cancelled")
-      .reduce((sum, booking) => sum + (booking.totalPrice || 0), 0);
+      .reduce((sum, booking) => {
+        if (booking.status === "cancelled") {
+          return sum + (booking.cancellationFee || 0);
+        }
+        return sum + (booking.totalPrice || 0);
+      }, 0);
   };
 
   if (loading) return <Loader />;
@@ -173,10 +177,17 @@ const Bookingdetails = () => {
                       </td>
 
                       <td className="p-4">
-                        <div className={`text-lg font-bold ${booking.status === "cancelled" ? "text-gray-400 line-through" : "text-green-600"}`}>
-                          ₹{booking.totalPrice?.toLocaleString()}
+                        <div className={`text-lg font-bold ${booking.status === "cancelled" ? "text-red-600" : "text-green-600"}`}>
+                          ₹{booking.status === "cancelled"
+                            ? (booking.cancellationFee || 0).toLocaleString()
+                            : (booking.totalPrice || 0).toLocaleString()}
                         </div>
-                        {booking.guests > 0 && (
+                        {booking.status === "cancelled" && (
+                          <div className="text-[10px] text-gray-500 font-medium">
+                            Retained Fee
+                          </div>
+                        )}
+                        {booking.guests > 0 && booking.status !== "cancelled" && (
                           <div className="text-xs text-gray-500">
                             {booking.guests} guests
                           </div>
@@ -185,10 +196,10 @@ const Bookingdetails = () => {
 
                       <td className="p-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${booking.status === "cancelled"
-                            ? "bg-red-100 text-red-600"
-                            : booking.status === "confirmed"
-                              ? "bg-green-100 text-green-600"
-                              : "bg-blue-100 text-blue-600"
+                          ? "bg-red-100 text-red-600"
+                          : booking.status === "confirmed"
+                            ? "bg-green-100 text-green-600"
+                            : "bg-blue-100 text-blue-600"
                           }`}>
                           {booking.status}
                         </span>

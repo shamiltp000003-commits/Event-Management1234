@@ -10,7 +10,7 @@ import { registerSW } from "virtual:pwa-register";
 
 registerSW({ immediate: true })
 // ✅ AXIOS GLOBAL DEFAULTS (NO TOKEN)
-  axios.defaults.baseURL = "https://event-management-szqn.onrender.com/api";
+axios.defaults.baseURL = "https://event-management-szqn.onrender.com/api";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

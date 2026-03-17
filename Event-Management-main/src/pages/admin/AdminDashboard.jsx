@@ -200,7 +200,12 @@ const AdminDashboard = () => {
             </div>
           </div>
           <p className="text-3xl font-bold text-gray-800">
-            ₹{dashboardData.bookings?.reduce((sum, booking) => sum + (booking.totalPrice || 0), 0)?.toLocaleString() ?? 0}
+            ₹{dashboardData.bookings?.reduce((sum, booking) => {
+              if (booking.status === "cancelled") {
+                return sum + (booking.cancellationFee || 0);
+              }
+              return sum + (booking.totalPrice || 0);
+            }, 0)?.toLocaleString() ?? 0}
           </p>
           <p className="text-sm text-green-600 mt-2 flex items-center gap-1 font-medium"><Activity size={14} /> Platform growth</p>
         </div>

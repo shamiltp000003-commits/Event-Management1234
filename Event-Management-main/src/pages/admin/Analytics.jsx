@@ -57,7 +57,8 @@ const Analytics = () => {
     const revenueByMonth = bookings.reduce((acc, b) => {
         const date = new Date(b.createdAt);
         const month = date.toLocaleString('default', { month: 'short' });
-        acc[month] = (acc[month] || 0) + b.totalPrice;
+        const amount = b.status === 'cancelled' ? (b.cancellationFee || 0) : (b.totalPrice || 0);
+        acc[month] = (acc[month] || 0) + amount;
         return acc;
     }, {});
     const revenueChartData = Object.keys(revenueByMonth).map(month => ({
@@ -85,7 +86,12 @@ const Analytics = () => {
         count: statusCount[status]
     }));
 
-    const totalRevenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
+    const totalRevenue = bookings.reduce((sum, b) => {
+        if (b.status === 'cancelled') {
+            return sum + (b.cancellationFee || 0);
+        }
+        return sum + (b.totalPrice || 0);
+    }, 0);
     const activeBookings = bookings.filter(b => b.status === 'confirmed' || b.status === 'pending').length;
 
     return (
@@ -139,21 +145,23 @@ const Analytics = () => {
                     </div>
                     <div className="h-[250px] sm:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={revenueChartData}>
-                                <defs>
-                                    <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#0891b2" stopOpacity={0.1} />
-                                        <stop offset="95%" stopColor="#0891b2" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
+                            <LineChart data={revenueChartData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} dy={10} />
                                 <YAxis axisLine={false} tickLine={false} tick={{ fill: '#94a3b8', fontSize: 12 }} />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                 />
-                                <Area type="monotone" dataKey="revenue" stroke="#0891b2" strokeWidth={3} fillOpacity={1} fill="url(#colorRev)" />
-                            </AreaChart>
+                                <Legend verticalAlign="top" height={36}/>
+                                <Line 
+                                    type="monotone" 
+                                    dataKey="revenue" 
+                                    stroke="#0891b2" 
+                                    strokeWidth={4} 
+                                    dot={{ r: 6, fill: '#0891b2', strokeWidth: 2, stroke: '#fff' }} 
+                                    activeDot={{ r: 8, strokeWidth: 0 }} 
+                                />
+                            </LineChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
@@ -222,12 +230,21 @@ const Analytics = () => {
                                         <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-cyan-600" />
                                     </div>
                                     <div className="truncate">
-                                        <h4 className="text-sm font-bold text-gray-800 truncate">{booking.serviceName}</h4>
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="text-sm font-bold text-gray-800 truncate">{booking.serviceName}</h4>
+                                            {booking.status === 'cancelled' && (
+                                                <span className="text-[8px] bg-red-50 text-red-500 px-1 rounded border border-red-100 font-bold uppercase">Cancelled</span>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-gray-500 truncate">{booking.customerName}</p>
                                     </div>
                                 </div>
                                 <div className="text-right flex-shrink-0">
-                                    <p className="text-sm font-bold text-gray-800">₹{booking.totalPrice.toLocaleString()}</p>
+                                    <p className={`text-sm font-bold ${booking.status === 'cancelled' ? 'text-red-500' : 'text-gray-800'}`}>
+                                        ₹{booking.status === 'cancelled' 
+                                            ? (booking.cancellationFee || 0).toLocaleString() 
+                                            : (booking.totalPrice || 0).toLocaleString()}
+                                    </p>
                                     <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">{new Date(booking.createdAt).toLocaleDateString()}</p>
                                 </div>
                             </div>

@@ -43,6 +43,7 @@ import ScrollToTop from './components/ScrollToTop'
 import Analytics from './pages/admin/Analytics'
 import AdminNotification from './pages/admin/AdminNotification'
 import ProviderNotification from './pages/serviceProvider/ProviderNotification'
+import Transactions from './pages/user/Transactions'
 
 const App = () => {
   const { pathname } = useLocation();
@@ -79,6 +80,7 @@ const App = () => {
           <Route path="/user-dashboard" element={<UserLayout />}>
             <Route index element={<UserBookings />} />
             <Route path="faq" element={<UserFAQ />} />
+            <Route path="transactions" element={<Transactions />} />
             {/* <Route path="userbookings" element={} /> */}
             {/* <Route path="manage-user" element={<ManageUser />} />
             <Route path="settlement-history" element={<SettlementHistory />} />
